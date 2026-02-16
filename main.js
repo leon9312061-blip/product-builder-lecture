@@ -11,12 +11,13 @@
 //   - Copy the firebaseConfig object and paste it below.
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCiXhmeWPpzHciXlxeZ6XkrGp_ltw_97XY",
+  authDomain: "producttest-3b71f.firebaseapp.com",
+  projectId: "producttest-3b71f",
+  storageBucket: "producttest-3b71f.firebasestorage.app",
+  messagingSenderId: "686825877099",
+  appId: "1:686825877099:web:037d88706a2c6530b50b2e",
+  measurementId: "G-X33CDY2RY0"
 };
 
 
@@ -164,7 +165,7 @@ document.getElementById('auth-link').addEventListener('click', (e) => {
 const globalChatRef = db.collection('globalChat');
 const chatMessages = document.getElementById('chat-messages');
 
-globalChatRef.orderBy('timestamp', 'desc').limit(200).onSnapshot(snapshot => {
+globalChatRef.onSnapshot(snapshot => {
     chatMessages.innerHTML = '';
     snapshot.docs.reverse().forEach(doc => {
         const message = doc.data();
@@ -175,7 +176,9 @@ globalChatRef.orderBy('timestamp', 'desc').limit(200).onSnapshot(snapshot => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
+
 document.getElementById('send-message-btn').addEventListener('click', () => {
+    console.log('Send message button clicked.');
     const user = auth.currentUser;
     const messageInput = document.getElementById('message-input');
     // Allow anonymous chat: if no user, use "Anonymous"
@@ -183,14 +186,25 @@ document.getElementById('send-message-btn').addEventListener('click', () => {
 
     const message = messageInput.value.trim();
     if (message) {
+        console.log('Attempting to send message:', { username, message });
         globalChatRef.add({
             username: username,
             message: message,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            console.log('Message successfully added to Firestore.');
+            messageInput.value = '';
+        })
+        .catch(error => {
+            console.error('Error adding message to Firestore:', error);
+            alert('메시지 전송 실패: ' + error.message); // User-friendly alert
         });
-        messageInput.value = '';
+    } else {
+        console.log('Message input is empty. Not sending.');
     }
 });
+
 
 
 // --- POST SYSTEM --- //

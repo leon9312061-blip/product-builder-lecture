@@ -1,0 +1,62 @@
+
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function for common validation
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Common validation for anonymous/signed-in users
+    function canCreateAnonymous() {
+      // Allow if not signed in, or if signed in, but still allowing anonymous-like behavior.
+      // For this case, we explicitly allow "null" auth for anonymous users.
+      // If you want to require *some* form of authentication for posting, change this.
+      return true; // Simplified: allowing anyone to create, authenticated or not.
+    }
+
+    // --- posts Collection Rules ---
+    match /posts/{postId} {
+      // Anyone can read posts
+      allow read: if true;
+
+      // Allow create only under specific conditions for both authenticated and anonymous users
+      allow create: if canCreateAnonymous()
+                     && request.resource.data.title is string
+                     && request.resource.data.title.size() > 0
+                     && request.resource.data.title.size() <= 100
+                     && request.resource.data.content is string
+                     && request.resource.data.content.size() > 0
+                     && request.resource.data.content.size() <= 2000
+                     && request.resource.data.stockSymbol is string
+                     && request.resource.data.stockSymbol.size() <= 10
+                     && request.resource.data.username is string
+                     && request.resource.data.username.size() > 0
+                     && request.resource.data.username.size() <= 50 // Assuming a reasonable max username length
+                     && request.resource.data.createdAt == request.time; // Server timestamp
+
+      // No one can update or delete existing posts (to prevent editing others' content and spam)
+      allow update, delete: if false;
+
+      // If you later want to allow authenticated users to update/delete *their own* posts:
+      // allow update, delete: if isSignedIn()
+      //                     && request.auth.uid == resource.data.authorId // assuming 'authorId' field exists and stores UID
+      //                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['content', 'title', 'stockSymbol']); // Allow only specific fields to be updated
+    }
+
+    // --- globalChat Collection Rules ---
+    match /globalChat/{messageId} {
+      // Anyone can read chat messages
+      allow read: if true;
+
+      // TEMPORARILY OPEN FOR DEBUGGING
+      allow create: if true;
+
+      // No one can update or delete existing chat messages
+      allow update, delete: if false;
+    }
+  }
+}
+
