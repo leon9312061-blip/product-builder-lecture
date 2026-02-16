@@ -333,13 +333,59 @@ nav a:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+
+    nav ul {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    nav li {
+        margin: 0.25rem 0;
+        text-align: center;
+    }
+
     .container {
         flex-direction: column;
+        padding: 0.5rem;
+        gap: 0.5rem;
     }
+
+    .main-content,
     .right-chat-panel {
-      min-height: 400px;
+        flex: none; /* Override flex growth */
+        width: 100%; /* Take full width */
+        padding: 1rem;
+        min-height: auto; /* Allow content to define height */
+    }
+
+    .right-chat-panel {
+        order: 1; /* Place chat panel after main content */
+    }
+
+    .main-content {
+        order: 2; /* Place main content below chat */
     }
 }
+
+/* Styles specific to mobile-mode class added by JS */
+body.mobile-mode {
+    /* Further adjustments for when JS detects mobile */
+}
+
+body.mobile-mode .right-chat-panel {
+    /* On mobile, ensure chat is prominent */
+    min-height: 50vh; /* Make chat take at least 50% of viewport height */
+}
+
+body.mobile-mode .chat-messages {
+    height: calc(50vh - 100px); /* Adjust height based on viewport and header/input */
+}
+
 
 /* Theme Toggle Button Style */
 .theme-toggle {
