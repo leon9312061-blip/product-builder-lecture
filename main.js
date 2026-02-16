@@ -46,6 +46,8 @@ const translations = {
         symbol_placeholder: '주식 심볼 (예: AAPL)',
         content_placeholder: '무슨 생각을 하고 계신가요?',
         message_placeholder: '메시지를 입력하세요...',
+        dark_mode_text: '다크 모드',
+        white_mode_text: '화이트 모드',
     },
     en: {
         home: 'Home',
@@ -63,6 +65,8 @@ const translations = {
         symbol_placeholder: 'Stock Symbol (e.g., AAPL)',
         content_placeholder: 'What\'s on your mind?',
         message_placeholder: 'Type a message...',
+        dark_mode_text: 'Dark mode',
+        white_mode_text: 'White mode',
     }
 };
 
@@ -95,6 +99,40 @@ async function setLanguage() {
         document.documentElement.lang = 'ko'; 
     }
 }
+
+// --- THEME SWITCHING (DARK/LIGHT MODE) --- //
+const themeToggle = document.getElementById('theme-toggle');
+
+function setTheme(theme) {
+    document.body.classList.remove('light-mode', 'dark-mode'); // Remove existing classes
+    document.body.classList.add(theme);
+    localStorage.setItem('theme', theme);
+    const currentLang = document.documentElement.lang || 'ko'; // Get current language, default to 'ko'
+    themeToggle.textContent = theme === 'dark-mode'
+        ? translations[currentLang].white_mode_text
+        : translations[currentLang].dark_mode_text;
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // Check for system preference if no theme is saved
+        setTheme('dark-mode');
+    } else {
+        setTheme('light-mode'); // Default to light mode
+    }
+}
+
+themeToggle.addEventListener('click', () => {
+    if (document.body.classList.contains('dark-mode')) {
+        setTheme('light-mode');
+    } else {
+        setTheme('dark-mode');
+    }
+});
+
 
 // --- AUTHENTICATION --- //
 
@@ -140,15 +178,13 @@ globalChatRef.orderBy('timestamp', 'desc').limit(200).onSnapshot(snapshot => {
 document.getElementById('send-message-btn').addEventListener('click', () => {
     const user = auth.currentUser;
     const messageInput = document.getElementById('message-input');
-    if (!user) {
-        alert("Please log in to chat.");
-        return;
-    }
+    // Allow anonymous chat: if no user, use "Anonymous"
+    const username = user ? user.displayName : 'Anonymous';
 
     const message = messageInput.value.trim();
     if (message) {
         globalChatRef.add({
-            username: user.displayName,
+            username: username,
             message: message,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -165,13 +201,11 @@ const createPostForm = document.getElementById('create-post-form');
 createPostForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) {
-        alert("Please log in to create a post.");
-        return;
-    }
+    // Allow anonymous posting: if no user, use "Anonymous"
+    const username = user ? user.displayName : 'Anonymous';
 
     postsRef.add({
-        user: user.displayName,
+        user: username,
         title: document.getElementById('post-title').value,
         content: document.getElementById('post-content').value,
         stockSymbol: document.getElementById('stock-symbol').value,
@@ -185,4 +219,5 @@ createPostForm.addEventListener('submit', (e) => {
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     setLanguage();
+    loadTheme(); // Load theme on page load
 });
