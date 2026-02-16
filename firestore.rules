@@ -32,9 +32,11 @@ service cloud.firestore {
                      && request.resource.data.content.size() <= 2000
                      && request.resource.data.stockSymbol is string
                      && request.resource.data.stockSymbol.size() <= 10
-                     && request.resource.data.username is string
-                     && request.resource.data.username.size() > 0
-                     && request.resource.data.username.size() <= 50 // Assuming a reasonable max username length
+                     && request.resource.data.postAuthorId is string
+                     && request.resource.data.postAuthorId.size() > 0
+                     && request.resource.data.postAuthorId.size() <= 30
+                     && request.resource.data.postPasswordHash is string
+                     && request.resource.data.postPasswordHash.size() == 64 // SHA-256 hash length
                      && request.resource.data.createdAt == request.time; // Server timestamp
 
       // No one can update or delete existing posts (to prevent editing others' content and spam)

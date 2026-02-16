@@ -4,20 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>글로벌 주식 커뮤니티</title>
+    <title>Bull&Ant</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="logo">StockCommunity</div>
+        <div class="logo">
+            <svg width="120" height="30" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+                <!-- Bull Head -->
+                <path d="M10 15 L20 5 L30 15 L20 25 Z" fill="#28a745"/>
+                <circle cx="20" cy="15" r="5" fill="#1e7e34"/>
+                <!-- Ant Icon -->
+                <circle cx="45" cy="15" r="3" fill="#dc3545"/>
+                <circle cx="50" cy="15" r="3" fill="#dc3545"/>
+                <path d="M48 15 L52 10 M48 15 L52 20" stroke="#dc3545" stroke-width="1"/>
+                <!-- Text "Bull&Ant" -->
+                <text x="60" y="20" font-family="Arial, sans-serif" font-size="16" fill="#007bff" font-weight="bold">Bull&Ant</text>
+            </svg>
+        </div>
         <nav>
             <ul>
-                <li><a href="#" data-lang="home">홈</a></li>
-                <li><a href="#" data-lang="feed">글로벌 피드</a></li>
-                <li><a href="#" data-lang="screener">주식 스크리너</a></li>
-                <li><a href="#" data-lang="chat">실시간 채팅</a></li>
-                <li><a href="#" data-lang="market">시장 현황</a></li>
-                <li><a href="#" data-lang="profile">내 프로필</a></li>
+                <li><a href="#" data-lang="home" id="nav-home">홈</a></li>
+                <li><a href="#" data-lang="stock_board" id="nav-stock-board">주식판</a></li>
+                <li><a href="#" data-lang="master_invest" id="nav-master-invest">대가의투자</a></li>
+                <li><a href="#" data-lang="free_board" id="nav-free-board">자유게시판</a></li>
                 <li><button id="theme-toggle" class="theme-toggle"></button></li>
                 <li><a href="#" id="auth-link" data-lang="login">로그인</a></li>
             </ul>
@@ -26,35 +36,60 @@
 
     <div class="container">
         <main class="main-content">
-            <div class="post-creation">
-                <h3 data-lang="create_post">게시물 작성</h3>
-                <form id="create-post-form">
-                    <input type="text" id="post-title" data-lang-placeholder="title_placeholder" placeholder="제목" required>
-                    <input type="text" id="stock-symbol" data-lang-placeholder="symbol_placeholder" placeholder="주식 심볼 (예: AAPL)">
-                    <textarea id="post-content" data-lang-placeholder="content_placeholder" placeholder="무슨 생각을 하고 계신가요?" required></textarea>
-                    <button type="submit" data-lang="post_button">게시</button>
-                </form>
+            <!-- Section for Current Major Indices -->
+            <div id="current-major-indices" class="content-section">
+                <h3>현재 대표적인 지수들</h3>
+                <p>로딩 중...</p> <!-- Placeholder -->
             </div>
 
-            <div class="feed">
-                <h3 data-lang="feed">글로벌 피드</h3>
-                <!-- Posts will be dynamically loaded here -->
+            <!-- Real-time Chat will be here for homepage -->
+            <div class="right-chat-panel" id="homepage-chat-panel">
+                <div class="chat-header">
+                    <h3 data-lang="chat">실시간 채팅</h3>
+                    <div id="online-users"></div>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Chat messages will be dynamically loaded here -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" data-lang-placeholder="message_placeholder" placeholder="메시지를 입력하세요...">
+                    <button id="send-message-btn" data-lang="send_button">전송</button>
+                </div>
+            </div>
+
+            <!-- Section for Newly Posted Posts -->
+            <div id="newly-posted-posts" class="content-section">
+                <h3>새로 게시된 게시물</h3>
+                <div class="feed">
+                    <!-- Posts will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Post Creation and general feed, hidden by default on homepage, shown on specific board pages -->
+            <div id="post-board-section" class="content-section hidden">
+                <div class="post-creation">
+                    <h3 data-lang="create_post">게시물 작성</h3>
+                    <form id="create-post-form">
+                        <input type="text" id="post-id" data-lang-placeholder="id_placeholder" placeholder="아이디" required>
+                        <input type="password" id="post-password" data-lang-placeholder="password_placeholder" placeholder="암호" required>
+                        <input type="text" id="post-title" data-lang-placeholder="title_placeholder" placeholder="제목" required>
+                        <input type="text" id="stock-symbol" data-lang-placeholder="symbol_placeholder" placeholder="주식 심볼 (예: AAPL)">
+                        <textarea id="post-content" data-lang-placeholder="content_placeholder" placeholder="무슨 생각을 하고 계신가요?" required></textarea>
+                        <button type="submit" data-lang="post_button">게시</button>
+                    </form>
+                </div>
+                <div class="feed">
+                    <h3 data-lang="feed">게시물</h3>
+                    <!-- Posts will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Master's Investment section, hidden by default -->
+            <div id="master-investment-section" class="content-section hidden">
+                <h3>대가의투자</h3>
+                <p>로그인한 사용자만 접근 가능합니다.</p>
             </div>
         </main>
-
-        <aside class="right-chat-panel">
-            <div class="chat-header">
-                <h3 data-lang="chat">글로벌 채팅</h3>
-                <div id="online-users"></div>
-            </div>
-            <div class="chat-messages" id="chat-messages">
-                <!-- Chat messages will be dynamically loaded here -->
-            </div>
-            <div class="chat-input">
-                <input type="text" id="message-input" data-lang-placeholder="message_placeholder" placeholder="메시지를 입력하세요...">
-                <button id="send-message-btn" data-lang="send_button">전송</button>
-            </div>
-        </aside>
     </div>
 
     <!-- Firebase SDK -->

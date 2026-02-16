@@ -63,85 +63,171 @@ const db = firebase.firestore();
 
 
 
+
+
+
+
 const translations = {
+
+
 
     ko: {
 
+
+
         home: '홈',
 
-        feed: '글로벌 피드',
 
-        screener: '주식 스크리너',
 
-        chat: '실시간 채팅',
+        stock_board: '주식판',
 
-        market: '시장 현황',
 
-        profile: '내 프로필',
+
+        master_invest: '대가의투자',
+
+
+
+        free_board: '자유게시판',
+
+
+
+        chat: '실시간 채팅', // Keep chat for chat header
+
+
 
         login: '로그인',
 
+
+
         logout: '로그아웃',
+
+
 
         create_post: '게시물 작성',
 
+
+
         post_button: '게시',
+
+
 
         send_button: '전송',
 
+
+
         title_placeholder: '제목',
+
+
 
         symbol_placeholder: '주식 심볼 (예: AAPL)',
 
+
+
         content_placeholder: '무슨 생각을 하고 계신가요?',
+
+
 
         message_placeholder: '메시지를 입력하세요...',
 
+
+
         dark_mode_text: '다크 모드',
+
+
 
         white_mode_text: '화이트 모드',
 
+
+
+        developing: '구현중입니다', // New translation for 'developing'
+
+
+
     },
+
+
 
     en: {
 
+
+
         home: 'Home',
 
-        feed: 'Global Feed',
 
-        screener: 'Stock Screener',
 
-        chat: 'Live Chat',
+        stock_board: 'Stock Board',
 
-        market: 'Market Overview',
 
-        profile: 'My Profile',
+
+        master_invest: 'Master\'s Investment',
+
+
+
+        free_board: 'Free Board',
+
+
+
+        chat: 'Live Chat', // Keep chat for chat header
+
+
 
         login: 'Login',
 
+
+
         logout: 'Logout',
+
+
 
         create_post: 'Create a Post',
 
+
+
         post_button: 'Post',
+
+
 
         send_button: 'Send',
 
+
+
         title_placeholder: 'Title',
+
+
 
         symbol_placeholder: 'Stock Symbol (e.g., AAPL)',
 
+
+
         content_placeholder: 'What\'s on your mind?',
+
+
 
         message_placeholder: 'Type a message...',
 
+
+
         dark_mode_text: 'Dark mode',
+
+
 
         white_mode_text: 'White mode',
 
+
+
+        developing: 'Currently being implemented', // New translation for 'developing'
+
+
+
     }
 
+
+
 };
+
+
+
+
 
 
 
@@ -407,225 +493,811 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
         });
 
-    } else {
+    
 
-        console.log('Message input is empty. Not sending.');
+        } else {
 
-    }
+            console.log('Message input is empty. Not sending.');
 
-});
-
-
-
-
-
-
-
-// Add event listener for Enter key on the message input
-
-
-
-messageInput.addEventListener('keydown', (e) => {
-
-
-
-    if (e.key === 'Enter') {
-
-
-
-        e.preventDefault(); // Prevent default behavior (e.g., new line in textarea, form submission)
-
-
-
-        sendMessageBtn.click(); // Trigger the click event on the send button
-
-
-
-    }
-
-
-
-});
-
-
-
-
-
-
-
-
-
-
-
-// --- MOBILE MODE DETECTION --- //
-
-
-
-function detectMobileAndApplyClass() {
-
-
-
-    const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches ||
-
-
-
-                     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-
-
-    if (isMobile) {
-
-
-
-        document.body.classList.add('mobile-mode');
-
-
-
-    } else {
-
-
-
-        document.body.classList.remove('mobile-mode');
-
-
-
-    }
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-// --- POST SYSTEM --- //
-
-
-
-
-
-
-
-const postsRef = db.collection('posts');
-
-
-
-const createPostForm = document.getElementById('create-post-form');
-
-
-
-
-
-
-
-createPostForm.addEventListener('submit', (e) => {
-
-
-
-    e.preventDefault();
-
-
-
-    const user = auth.currentUser;
-
-
-
-    // Allow anonymous posting: if no user, use "Anonymous"
-
-
-
-    const username = user ? user.displayName : 'Anonymous';
-
-
-
-
-
-
-
-    postsRef.add({
-
-
-
-        user: username,
-
-
-
-        title: document.getElementById('post-title').value,
-
-
-
-        content: document.getElementById('post-content').value,
-
-
-
-        stockSymbol: document.getElementById('stock-symbol').value,
-
-
-
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-
-
-
-        likes: 0,
-
-
+        }
 
     });
 
+    
+
+    
+
+    // Add event listener for Enter key on the message input
+
+    messageInput.addEventListener('keydown', (e) => {
+
+        if (e.key === 'Enter') {
+
+            e.preventDefault(); // Prevent default behavior (e.g., new line in textarea, form submission)
+
+            sendMessageBtn.click(); // Trigger the click event on the send button
+
+        }
+
+    });
+
+    
+
+    
+
+    // --- MOBILE MODE DETECTION --- //
+
+    function detectMobileAndApplyClass() {
+
+        const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches ||
+
+                         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isMobile) {
+
+            document.body.classList.add('mobile-mode');
+
+        } else {
+
+            document.body.classList.remove('mobile-mode');
+
+        }
+
+    }
+
+    
+
+    // --- MAJOR INDICES DISPLAY --- //
+
+    function loadMajorIndices() {
+
+        const majorIndicesDiv = document.getElementById('current-major-indices');
+
+        let indicesHtml = '<h3>현재 대표적인 지수들</h3><div class="indices-list">';
+
+    
+
+        const indices = [
+
+            { name: 'KOSPI', value: '2,750.12', change: '+15.34', percent: '+0.56%', trend: 'up' },
+
+            { name: 'S&P 500', value: '5,000.45', change: '-5.21', percent: '-0.10%', trend: 'down' },
+
+            { name: 'NASDAQ', value: '15,670.78', change: '+78.90', percent: '+0.51%', trend: 'up' },
+
+            { name: 'Dow Jones', value: '38,500.67', change: '-120.10', percent: '-0.31%', trend: 'down' },
+
+        ];
+
+    
+
+        indices.forEach(index => {
+
+            indicesHtml += `
+
+                <div class="index-item ${index.trend}">
+
+                    <span class="index-name">${index.name}</span>
+
+                    <span class="index-value">${index.value}</span>
+
+                    <span class="index-change">${index.change} (${index.percent})</span>
+
+                </div>
+
+            `;
+
+        });
+
+        indicesHtml += '</div>';
+
+        majorIndicesDiv.innerHTML = indicesHtml;
+
+    }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    // --- POST SYSTEM --- //
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    const postsRef = db.collection('posts');
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    // Helper function for client-side password hashing (for demonstration purposes)
+
+    
+
+    
+
+    // NOTE: For production, password hashing should always be done server-side for security.
+
+    
+
+    
+
+    async function hashString(str) {
+
+    
+
+    
+
+        const textEncoder = new TextEncoder();
+
+    
+
+    
+
+        const data = textEncoder.encode(str);
+
+    
+
+    
+
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+    
+
+    
+
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    
+
+    
+
+        const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    
+
+    
+
+        return hashedPassword;
+
+    
+
+    
+
+    }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    // Reusable function to render posts
+
+    
+
+    
+
+    function renderPosts(targetElementSelector, query) {
+
+    
+
+    
+
+        const targetElement = document.querySelector(targetElementSelector);
+
+    
+
+    
+
+        if (!targetElement) {
+
+    
+
+    
+
+            console.error(`Target element not found: ${targetElementSelector}`);
+
+    
+
+    
+
+            return;
+
+    
+
+    
+
+        }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        query.onSnapshot(snapshot => {
+
+    
+
+    
+
+            targetElement.innerHTML = ''; // Clear existing posts
+
+    
+
+    
+
+            snapshot.forEach(doc => {
+
+    
+
+    
+
+                const post = doc.data();
+
+    
+
+    
+
+                const postId = doc.id;
+
+    
+
+    
+
+                const postElement = document.createElement('div');
+
+    
+
+    
+
+                postElement.classList.add('post-item');
+
+    
+
+    
+
+                postElement.innerHTML = `
+
+    
+
+    
+
+                    <h4>${post.title}</h4>
+
+    
+
+    
+
+                    <p>${post.content}</p>
+
+    
+
+    
+
+                    <small>작성자: ${post.postAuthorId || post.user || 'Anonymous'} | 심볼: ${post.stockSymbol || 'N/A'} | ${post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleString() : '날짜 없음'}</small>
+
+    
+
+    
+
+                `;
+
+    
+
+    
+
+                targetElement.appendChild(postElement);
+
+    
+
+    
+
+            });
+
+    
+
+    
+
+        });
+
+    
+
+    
+
+    }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    // Function to load newly posted posts for the homepage
+
+    
+
+    
+
+    function loadNewlyPostedPosts() {
+
+    
+
+    
+
+        const query = postsRef.orderBy('createdAt', 'desc').limit(5);
+
+    
+
+    
+
+        renderPosts('#newly-posted-posts .feed', query);
+
+    
+
+    
+
+    }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    const createPostForm = document.getElementById('create-post-form');
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    createPostForm.addEventListener('submit', async (e) => { // Made async to await hash
+
+    
+
+    
+
+        e.preventDefault();
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        const postId = document.getElementById('post-id').value.trim();
+
+    
+
+    
+
+        const postPassword = document.getElementById('post-password').value.trim();
+
+    
+
+    
+
+        const postTitle = document.getElementById('post-title').value.trim();
+
+    
+
+    
+
+        const postContent = document.getElementById('post-content').value.trim();
+
+    
+
+    
+
+        const stockSymbol = document.getElementById('stock-symbol').value.trim();
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        if (!postId || !postPassword || !postTitle || !postContent) {
+
+    
+
+    
+
+            alert('아이디, 암호, 제목, 내용을 모두 입력해주세요.');
+
+    
+
+    
+
+            return;
+
+    
+
+    
+
+        }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        const hashedPassword = await hashString(postPassword); // Hash the password
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        postsRef.add({
+
+    
+
+    
+
+            postAuthorId: postId, // Store the user-defined ID
+
+    
+
+    
+
+            postPasswordHash: hashedPassword, // Store the hashed password
+
+    
+
+    
+
+            title: postTitle,
+
+    
+
+    
+
+            content: postContent,
+
+    
+
+    
+
+            stockSymbol: stockSymbol,
+
+    
+
+    
+
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+    
+
+    
+
+            likes: 0,
+
+    
+
+    
+
+            // Removed original 'user' field as we are now using postAuthorId
+
+    
+
+    
+
+        })
+
+    
+
+    
+
+        .then(() => {
+
+    
+
+    
+
+            alert('게시물이 성공적으로 작성되었습니다!');
+
+    
+
+    
+
+            createPostForm.reset();
+
+    
+
+    
+
+        })
+
+    
+
+    
+
+        .catch(error => {
+
+    
+
+    
+
+            console.error("Error adding post: ", error);
+
+    
+
+    
+
+            alert('게시물 작성 중 오류가 발생했습니다: ' + error.message);
+
+    
+
+    
+
+        });
+
+    
+
+    
+
+    });
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    // --- INITIALIZATION ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        setLanguage();
+
+        loadTheme(); // Load theme on page load
+
+        detectMobileAndApplyClass(); // Detect mobile and apply class on load
+
+    
+
+        // Get references to content sections
+
+        const homeChatPanel = document.getElementById('homepage-chat-panel');
+
+        const currentMajorIndices = document.getElementById('current-major-indices');
+
+        const newlyPostedPosts = document.getElementById('newly-posted-posts');
+
+        const postBoardSection = document.getElementById('post-board-section');
+
+        const masterInvestmentSection = document.getElementById('master-investment-section');
+
+    
+
+        // Function to hide all content sections
+
+        function hideAllSections() {
+
+            homeChatPanel.classList.add('hidden');
+
+            currentMajorIndices.classList.add('hidden');
+
+            newlyPostedPosts.classList.add('hidden');
+
+            postBoardSection.classList.add('hidden');
+
+            masterInvestmentSection.classList.add('hidden');
+
+        }
+
+    
+
+        // Function to show specific sections based on navigation
+
+        function showContent(sectionName) {
+
+            hideAllSections(); // Hide all sections first
+
+    
+
+            switch (sectionName) {
+
+                case 'home':
+
+                    currentMajorIndices.classList.remove('hidden');
+
+                    loadMajorIndices(); // Load indices when home is active
+
+                    homeChatPanel.classList.remove('hidden');
+
+                    newlyPostedPosts.classList.remove('hidden');
+
+                    loadNewlyPostedPosts(); // Load newly posted posts for homepage
+
+                    break;
+
+                case 'stock_board':
+
+                case 'free_board': // Both boards will use the same post board section for now
+
+                    postBoardSection.classList.remove('hidden');
+
+                    // You might add logic here later to differentiate between stock_board and free_board
+
+                    // For now, load all posts in the main feed area
+
+                    renderPosts('#post-board-section .feed', postsRef.orderBy('createdAt', 'desc'));
+
+                    break;
+
+                case 'master_invest':
+
+                    masterInvestmentSection.classList.remove('hidden');
+
+                    // Check if user is logged in
+
+                    const user = auth.currentUser;
+
+                    if (user) {
+
+                        alert(translations[document.documentElement.lang].developing); // Show "Developing" popup
+
+                    } else {
+
+                        alert(translations[document.documentElement.lang].login); // Prompt to log in
+
+                    }
+
+                    break;
+
+                default:
+
+                    currentMajorIndices.classList.remove('hidden');
+
+                    loadMajorIndices(); // Load indices by default on home
+
+                    homeChatPanel.classList.remove('hidden');
+
+                    newlyPostedPosts.classList.remove('hidden');
+
+                    loadNewlyPostedPosts(); // Load newly posted posts by default on home
+
+                    break;
+
+            }
+
+        }
+
+    
+
+        // Attach event listeners to new navigation links
+
+        document.getElementById('nav-home').addEventListener('click', (e) => {
+
+            e.preventDefault();
+
+            showContent('home');
+
+        });
+
+    
+
+        document.getElementById('nav-stock-board').addEventListener('click', (e) => {
+
+            e.preventDefault();
+
+            showContent('stock_board');
+
+        });
+
+    
+
+        document.getElementById('nav-master-invest').addEventListener('click', (e) => {
+
+            e.preventDefault();
+
+            showContent('master_invest');
+
+        });
+
+    
+
+        document.getElementById('nav-free-board').addEventListener('click', (e) => {
+
+            e.preventDefault();
+
+            showContent('free_board');
+
+        });
+
+    
+
+        // Initially show the home content
+
+        showContent('home');
+
+    });
+
+    
+
+    window.addEventListener('resize', detectMobileAndApplyClass); // Re-evaluate on resize
+
+    
 
 
 
 
 
 
-    createPostForm.reset();
 
 
-
-});
-
-
-
-
-
-
-
-// --- INITIALIZATION ---
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-
-
-
-    setLanguage();
-
-
-
-    loadTheme(); // Load theme on page load
-
-
-
-    detectMobileAndApplyClass(); // Detect mobile and apply class on load
-
-
-
-});
-
-
-
-
-
-
-
-window.addEventListener('resize', detectMobileAndApplyClass); // Re-evaluate on resize
 
 
 
