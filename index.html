@@ -1,14 +1,66 @@
-<!doctype html>
-<html lang="en">
+
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글로벌 주식 커뮤니티</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <header>
+        <div class="logo">StockCommunity</div>
+        <nav>
+            <ul>
+                <li><a href="#" data-lang="home">홈</a></li>
+                <li><a href="#" data-lang="feed">글로벌 피드</a></li>
+                <li><a href="#" data-lang="screener">주식 스크리너</a></li>
+                <li><a href="#" data-lang="chat">실시간 채팅</a></li>
+                <li><a href="#" data-lang="market">시장 현황</a></li>
+                <li><a href="#" data-lang="profile">내 프로필</a></li>
+                <li><a href="#" id="auth-link" data-lang="login">로그인</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main class="main-content">
+            <div class="post-creation">
+                <h3 data-lang="create_post">게시물 작성</h3>
+                <form id="create-post-form">
+                    <input type="text" id="post-title" data-lang-placeholder="title_placeholder" placeholder="제목" required>
+                    <input type="text" id="stock-symbol" data-lang-placeholder="symbol_placeholder" placeholder="주식 심볼 (예: AAPL)">
+                    <textarea id="post-content" data-lang-placeholder="content_placeholder" placeholder="무슨 생각을 하고 계신가요?" required></textarea>
+                    <button type="submit" data-lang="post_button">게시</button>
+                </form>
+            </div>
+
+            <div class="feed">
+                <h3 data-lang="feed">글로벌 피드</h3>
+                <!-- Posts will be dynamically loaded here -->
+            </div>
+        </main>
+
+        <aside class="right-chat-panel">
+            <div class="chat-header">
+                <h3 data-lang="chat">글로벌 채팅</h3>
+                <div id="online-users"></div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Chat messages will be dynamically loaded here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="message-input" data-lang-placeholder="message_placeholder" placeholder="메시지를 입력하세요...">
+                <button id="send-message-btn" data-lang="send_button">전송</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script type="module" src="main.js"></script>
 </body>
 </html>
