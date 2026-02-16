@@ -1,3 +1,4 @@
+
 :root {
     --light-bg: #f8f8f8; /* Lighter background for a cleaner look */
     --primary-text: #212529; /* Dark gray for main text */
@@ -78,7 +79,7 @@ nav a:hover {
     overflow-y: auto; /* Allow scrolling if content overflows */
 }
 
-/* Styles for new content sections */
+/* Styles for new content sections (post-board-section, master-investment-section) */
 .content-section {
     background-color: var(--container-bg);
     border-radius: 8px;
@@ -272,12 +273,10 @@ body.dark-mode .theme-toggle:hover {
     }
 
     /* Order for homepage elements on mobile */
-    #current-major-indices { order: 1; }
-    #homepage-chat-panel { order: 2; min-height: 50vh; height: auto; } /* Chat prominent on mobile */
+    #homepage-chat-panel { order: 1; min-height: 50vh; height: auto; } /* Chat prominent on mobile */
     #homepage-chat-panel .chat-messages { height: calc(50vh - 100px); }
-    #newly-posted-posts { order: 3; }
-    #post-board-section { order: 4; } /* Boards will appear after home sections */
-    #master-investment-section { order: 5; }
+    #post-board-section { order: 2; } /* Boards will appear after home sections */
+    #master-investment-section { order: 3; }
 
 }
 

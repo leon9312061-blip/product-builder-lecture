@@ -547,53 +547,171 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
-    // --- MAJOR INDICES DISPLAY --- //
-
-    function loadMajorIndices() {
-
-        const majorIndicesDiv = document.getElementById('current-major-indices');
-
-        let indicesHtml = '<h3>현재 대표적인 지수들</h3><div class="indices-list">';
+    
 
     
 
-        const indices = [
-
-            { name: 'KOSPI', value: '2,750.12', change: '+15.34', percent: '+0.56%', trend: 'up' },
-
-            { name: 'S&P 500', value: '5,000.45', change: '-5.21', percent: '-0.10%', trend: 'down' },
-
-            { name: 'NASDAQ', value: '15,670.78', change: '+78.90', percent: '+0.51%', trend: 'up' },
-
-            { name: 'Dow Jones', value: '38,500.67', change: '-120.10', percent: '-0.31%', trend: 'down' },
-
-        ];
+    // --- POST SYSTEM --- //
 
     
 
-        indices.forEach(index => {
+    
 
-            indicesHtml += `
+    
 
-                <div class="index-item ${index.trend}">
+    const postsRef = db.collection('posts');
 
-                    <span class="index-name">${index.name}</span>
+    
 
-                    <span class="index-value">${index.value}</span>
+    
 
-                    <span class="index-change">${index.change} (${index.percent})</span>
+    
 
-                </div>
+    // Helper function for client-side password hashing (for demonstration purposes)
 
-            `;
+    
+
+    // NOTE: For production, password hashing should always be done server-side for security.
+
+    
+
+    async function hashString(str) {
+
+    
+
+        const textEncoder = new TextEncoder();
+
+    
+
+        const data = textEncoder.encode(str);
+
+    
+
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+    
+
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    
+
+        const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    
+
+        return hashedPassword;
+
+    
+
+    }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    // Reusable function to render posts
+
+    
+
+    function renderPosts(targetElementSelector, query) {
+
+    
+
+        const targetElement = document.querySelector(targetElementSelector);
+
+    
+
+        if (!targetElement) {
+
+    
+
+            console.error(`Target element not found: ${targetElementSelector}`);
+
+    
+
+            return;
+
+    
+
+        }
+
+    
+
+    
+
+    
+
+        query.onSnapshot(snapshot => {
+
+    
+
+            targetElement.innerHTML = ''; // Clear existing posts
+
+    
+
+            snapshot.forEach(doc => {
+
+    
+
+                const post = doc.data();
+
+    
+
+                const postId = doc.id;
+
+    
+
+                const postElement = document.createElement('div');
+
+    
+
+                postElement.classList.add('post-item');
+
+    
+
+                postElement.innerHTML = `
+
+    
+
+                    <h4>${post.title}</h4>
+
+    
+
+                    <p>${post.content}</p>
+
+    
+
+                    <small>작성자: ${post.postAuthorId || post.user || 'Anonymous'} | 심볼: ${post.stockSymbol || 'N/A'} | ${post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleString() : '날짜 없음'}</small>
+
+    
+
+                `;
+
+    
+
+                targetElement.appendChild(postElement);
+
+    
+
+            });
+
+    
 
         });
 
-        indicesHtml += '</div>';
-
-        majorIndicesDiv.innerHTML = indicesHtml;
+    
 
     }
+
+    
+
+    
 
     
 
@@ -617,7 +735,15 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
+    
+
     const postsRef = db.collection('posts');
+
+    
+
+    
 
     
 
@@ -635,7 +761,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
     // NOTE: For production, password hashing should always be done server-side for security.
+
+    
 
     
 
@@ -647,7 +777,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         const textEncoder = new TextEncoder();
+
+    
 
     
 
@@ -659,7 +793,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+    
 
     
 
@@ -671,7 +809,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    
 
     
 
@@ -683,7 +825,15 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
     }
+
+    
+
+    
+
+    
 
     
 
@@ -707,7 +857,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
     function renderPosts(targetElementSelector, query) {
+
+    
 
     
 
@@ -719,7 +873,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         if (!targetElement) {
+
+    
 
     
 
@@ -731,7 +889,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             return;
+
+    
 
     
 
@@ -749,7 +911,13 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
+    
+
         query.onSnapshot(snapshot => {
+
+    
 
     
 
@@ -761,7 +929,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             snapshot.forEach(doc => {
+
+    
 
     
 
@@ -773,7 +945,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
                 const postId = doc.id;
+
+    
 
     
 
@@ -785,7 +961,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
                 postElement.classList.add('post-item');
+
+    
 
     
 
@@ -797,7 +977,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
                     <h4>${post.title}</h4>
+
+    
 
     
 
@@ -809,7 +993,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
                     <small>작성자: ${post.postAuthorId || post.user || 'Anonymous'} | 심볼: ${post.stockSymbol || 'N/A'} | ${post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleString() : '날짜 없음'}</small>
+
+    
 
     
 
@@ -821,7 +1009,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
                 targetElement.appendChild(postElement);
+
+    
 
     
 
@@ -833,49 +1025,29 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         });
 
     
 
     
 
-    }
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    // Function to load newly posted posts for the homepage
-
-    
-
-    
-
-    function loadNewlyPostedPosts() {
-
-    
-
-    
-
-        const query = postsRef.orderBy('createdAt', 'desc').limit(5);
-
-    
-
-    
-
-        renderPosts('#newly-posted-posts .feed', query);
-
-    
-
     
 
     }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
@@ -899,7 +1071,13 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
+    
+
     createPostForm.addEventListener('submit', async (e) => { // Made async to await hash
+
+    
 
     
 
@@ -917,7 +1095,13 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
+    
+
         const postId = document.getElementById('post-id').value.trim();
+
+    
 
     
 
@@ -929,13 +1113,19 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         const postTitle = document.getElementById('post-title').value.trim();
 
     
 
     
 
+    
+
         const postContent = document.getElementById('post-content').value.trim();
+
+    
 
     
 
@@ -953,7 +1143,13 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
+    
+
         if (!postId || !postPassword || !postTitle || !postContent) {
+
+    
 
     
 
@@ -965,13 +1161,21 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             return;
 
     
 
     
 
+    
+
         }
+
+    
+
+    
 
     
 
@@ -995,7 +1199,13 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
+    
+
         postsRef.add({
+
+    
 
     
 
@@ -1007,7 +1217,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             postPasswordHash: hashedPassword, // Store the hashed password
+
+    
 
     
 
@@ -1019,7 +1233,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             content: postContent,
+
+    
 
     
 
@@ -1031,7 +1249,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+    
 
     
 
@@ -1043,13 +1265,19 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             // Removed original 'user' field as we are now using postAuthorId
 
     
 
     
 
+    
+
         })
+
+    
 
     
 
@@ -1061,7 +1289,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             alert('게시물이 성공적으로 작성되었습니다!');
+
+    
 
     
 
@@ -1073,7 +1305,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         })
+
+    
 
     
 
@@ -1085,7 +1321,11 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
             console.error("Error adding post: ", error);
+
+    
 
     
 
@@ -1097,13 +1337,29 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     
 
+    
+
         });
 
     
 
     
 
+    
+
     });
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
@@ -1117,177 +1373,609 @@ sendMessageBtn.addEventListener('click', () => { // Modified to use sendMessageB
 
     // --- INITIALIZATION ---
 
+    
+
+    
+
+    
+
     document.addEventListener('DOMContentLoaded', () => {
+
+    
+
+    
+
+    
 
         setLanguage();
 
+    
+
+    
+
+    
+
         loadTheme(); // Load theme on page load
+
+    
+
+    
+
+    
 
         detectMobileAndApplyClass(); // Detect mobile and apply class on load
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
         // Get references to content sections
+
+    
+
+    
+
+    
 
         const homeChatPanel = document.getElementById('homepage-chat-panel');
 
-        const currentMajorIndices = document.getElementById('current-major-indices');
+    
 
-        const newlyPostedPosts = document.getElementById('newly-posted-posts');
+    
+
+    
 
         const postBoardSection = document.getElementById('post-board-section');
+
+    
+
+    
+
+    
 
         const masterInvestmentSection = document.getElementById('master-investment-section');
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
         // Function to hide all content sections
+
+    
+
+    
+
+    
 
         function hideAllSections() {
 
+    
+
+    
+
+    
+
             homeChatPanel.classList.add('hidden');
 
-            currentMajorIndices.classList.add('hidden');
+    
 
-            newlyPostedPosts.classList.add('hidden');
+    
+
+    
 
             postBoardSection.classList.add('hidden');
 
+    
+
+    
+
+    
+
             masterInvestmentSection.classList.add('hidden');
 
+    
+
+    
+
+    
+
         }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
         // Function to show specific sections based on navigation
 
+    
+
+    
+
+    
+
         function showContent(sectionName) {
+
+    
+
+    
+
+    
 
             hideAllSections(); // Hide all sections first
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
             switch (sectionName) {
+
+    
+
+    
+
+    
 
                 case 'home':
 
-                    currentMajorIndices.classList.remove('hidden');
+    
 
-                    loadMajorIndices(); // Load indices when home is active
+    
+
+    
 
                     homeChatPanel.classList.remove('hidden');
 
-                    newlyPostedPosts.classList.remove('hidden');
+    
 
-                    loadNewlyPostedPosts(); // Load newly posted posts for homepage
+    
+
+    
 
                     break;
+
+    
+
+    
+
+    
 
                 case 'stock_board':
 
+    
+
+    
+
+    
+
                 case 'free_board': // Both boards will use the same post board section for now
+
+    
+
+    
+
+    
 
                     postBoardSection.classList.remove('hidden');
 
+    
+
+    
+
+    
+
                     // You might add logic here later to differentiate between stock_board and free_board
+
+    
+
+    
+
+    
 
                     // For now, load all posts in the main feed area
 
+    
+
+    
+
+    
+
                     renderPosts('#post-board-section .feed', postsRef.orderBy('createdAt', 'desc'));
 
+    
+
+    
+
+    
+
                     break;
+
+    
+
+    
+
+    
 
                 case 'master_invest':
 
+    
+
+    
+
+    
+
                     masterInvestmentSection.classList.remove('hidden');
+
+    
+
+    
+
+    
 
                     // Check if user is logged in
 
+    
+
+    
+
+    
+
                     const user = auth.currentUser;
+
+    
+
+    
+
+    
 
                     if (user) {
 
+    
+
+    
+
+    
+
                         alert(translations[document.documentElement.lang].developing); // Show "Developing" popup
+
+    
+
+    
+
+    
 
                     } else {
 
+    
+
+    
+
+    
+
                         alert(translations[document.documentElement.lang].login); // Prompt to log in
+
+    
+
+    
+
+    
 
                     }
 
+    
+
+    
+
+    
+
                     break;
+
+    
+
+    
+
+    
 
                 default:
 
-                    currentMajorIndices.classList.remove('hidden');
+    
 
-                    loadMajorIndices(); // Load indices by default on home
+    
+
+    
 
                     homeChatPanel.classList.remove('hidden');
 
-                    newlyPostedPosts.classList.remove('hidden');
+    
 
-                    loadNewlyPostedPosts(); // Load newly posted posts by default on home
+    
+
+    
 
                     break;
 
+    
+
+    
+
+    
+
             }
+
+    
+
+    
+
+    
 
         }
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
         // Attach event listeners to new navigation links
+
+    
+
+    
+
+    
 
         document.getElementById('nav-home').addEventListener('click', (e) => {
 
+    
+
+    
+
+    
+
             e.preventDefault();
+
+    
+
+    
+
+    
 
             showContent('home');
 
+    
+
+    
+
+    
+
         });
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
         document.getElementById('nav-stock-board').addEventListener('click', (e) => {
 
+    
+
+    
+
+    
+
             e.preventDefault();
+
+    
+
+    
+
+    
 
             showContent('stock_board');
 
+    
+
+    
+
+    
+
         });
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
         document.getElementById('nav-master-invest').addEventListener('click', (e) => {
 
+    
+
+    
+
+    
+
             e.preventDefault();
+
+    
+
+    
+
+    
 
             showContent('master_invest');
 
+    
+
+    
+
+    
+
         });
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
         document.getElementById('nav-free-board').addEventListener('click', (e) => {
 
+    
+
+    
+
+    
+
             e.preventDefault();
 
+    
+
+    
+
+    
+
             showContent('free_board');
+
+    
+
+    
+
+    
 
         });
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
         // Initially show the home content
 
+    
+
+    
+
+    
+
         showContent('home');
+
+    
+
+    
+
+    
 
     });
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     window.addEventListener('resize', detectMobileAndApplyClass); // Re-evaluate on resize
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 
